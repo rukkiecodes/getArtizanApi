@@ -6,7 +6,7 @@ const checkAuth = require("../../middleware/auth")
 
 const User = require("../../models/user")
 
-router.post("/avatar", upload.single("avatar"), async (req, res) => {
+router.post("/avatar", upload.single("avatar"), checkAuth, async (req, res) => {
   const { email } = req.body
 
   try {
