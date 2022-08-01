@@ -27,7 +27,8 @@ app.use('/auth', [
   require('./routes/auth/signup'),
   require('./routes/auth/signin'),
   require('./routes/auth/getProfile'),
-  require('./routes/auth/updateProfile')
+  require('./routes/auth/updateProfile'),
+  require('./routes/auth/updateAvatar')
 ])
 
 app.use('/artizan', [
