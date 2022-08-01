@@ -26,7 +26,8 @@ if (process.env.NODE_ENV === "development") app.use(morgan("dev"))
 app.use('/auth', [
   require('./routes/auth/signup'),
   require('./routes/auth/signin'),
-  require('./routes/auth/getProfile')
+  require('./routes/auth/getProfile'),
+  require('./routes/auth/updateProfile')
 ])
 
 app.use('/artizan', [
