@@ -40,6 +40,11 @@ app.use('/artizan', [
   require('./routes/artizan/rateArtizan')
 ])
 
+app.use('/waitlist', [
+  require('./routes/waitlist/waitlist'),
+  require('./routes/waitlist/getList')
+])
+
 // Error handling
 app.use((error, req, res, next) => {
   const status = error.statusCode || 500
