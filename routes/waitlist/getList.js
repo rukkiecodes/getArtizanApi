@@ -1,9 +1,7 @@
 const router = require("express").Router()
 const Waitlist = require("../../models/waitlist")
 
-router.post("/profile", async (req, res) => {
-  const { email } = req.body
-
+router.get("/profile", async (req, res) => {
   try {
     let user = await Waitlist.find()
     if (user) {
