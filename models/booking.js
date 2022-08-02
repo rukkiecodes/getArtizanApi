@@ -10,6 +10,10 @@ const bookingSchema = new mongoose.Schema({
   address: { type: String },
   email: { type: String },
   description: { type: String },
+  status: {
+    type: String,
+    default: 'pending'
+  },
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",

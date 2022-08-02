@@ -35,7 +35,8 @@ app.use('/artizan', [
   require('./routes/artizan/findArtizan'),
   require('./routes/artizan/booking'),
   require('./routes/artizan/getBookings'),
-  require('./routes/artizan/getSingleBooking')
+  require('./routes/artizan/getSingleBooking'),
+  require('./routes/artizan/done')
 ])
 
 // Error handling
