@@ -10,7 +10,9 @@ const nodemailer = require('nodemailer')
 const userOTPVerification = require("../../models/userOTPVerification")
 
 let transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: process.env.PORT,
+  port: 587,
+  secure: false,
   auth: {
     user: process.env.EMAIL,
     pass: process.env.PASSWORD
