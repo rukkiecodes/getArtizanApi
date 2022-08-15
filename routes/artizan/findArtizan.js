@@ -2,10 +2,10 @@ const router = require('express').Router()
 const User = require('../../models/user')
 
 router.post('/getArtizan', async (req, res) => {
-  const { name, email, phone, gender, state, lga, specialty } = req.body
+  const { state, specialty } = req.body
 
   try {
-    const users = await User.find({ $or: [{ email }, { name }, { phone }, { gender }, { state }, { lga }, { specialty }] })
+    const users = await User.find({ $or: [{ state }, { specialty }] })
 
     return res.status(200).json({
       users
