@@ -2,7 +2,7 @@ const router = require("express").Router()
 const User = require("../../models/user")
 const checkAuth = require("../../middleware/auth")
 
-router.post("/updateProfile", checkAuth, async (req, res) => {
+router.post("/updateProfile", async (req, res) => {
   const {
     email,
     name,
@@ -14,18 +14,15 @@ router.post("/updateProfile", checkAuth, async (req, res) => {
     description
   } = req.body
 
-  let _state = state.toLowerCase()
-  let _specialty = specialty.toLowerCase()
-
   try {
     let user = await User.updateOne({ email }, {
       $set: {
         name,
         phone,
         gender,
-        state: _state,
+        state,
         lga,
-        specialty: _specialty,
+        specialty,
         description
       }
     })
