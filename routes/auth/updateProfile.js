@@ -13,15 +13,18 @@ router.post("/updateProfile", checkAuth, async (req, res) => {
     specialty
   } = req.body
 
+  let _state = state.toLowerCase()
+  let _specialty = specialty.toLowerCase()
+
   try {
     let user = await User.updateOne({ email }, {
       $set: {
         name,
         phone,
         gender,
-        state,
+        state: _state,
         lga,
-        specialty
+        specialty: _specialty
       }
     })
     return res.status(200).json({
