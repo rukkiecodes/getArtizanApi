@@ -10,7 +10,8 @@ router.post("/updateProfile", checkAuth, async (req, res) => {
     gender,
     state,
     lga,
-    specialty
+    specialty,
+    description
   } = req.body
 
   let _state = state.toLowerCase()
@@ -24,7 +25,8 @@ router.post("/updateProfile", checkAuth, async (req, res) => {
         gender,
         state: _state,
         lga,
-        specialty: _specialty
+        specialty: _specialty,
+        description
       }
     })
     return res.status(200).json({

@@ -13,6 +13,7 @@ const userSchema = new mongoose.Schema({
   lga: { type: String, required: true },
   specialty: { type: String, required: true },
   password: { type: String, required: true },
+  description: { type: String },
   verified: Boolean
 }, { timestamps: true })
 
