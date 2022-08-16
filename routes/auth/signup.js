@@ -22,9 +22,6 @@ let transporter = nodemailer.createTransport({
 router.post("/signup", async (req, res) => {
   const { name, email, phone, gender, state, lga, specialty, password } = req.body
 
-  let _state = state.toLowerCase()
-  let _specialty = specialty.toLowerCase()
-
   try {
     let user = await User.findOne({ email })
 
@@ -46,9 +43,9 @@ router.post("/signup", async (req, res) => {
             email,
             phone,
             gender,
-            state: _state,
+            state,
             lga,
-            specialty: _specialty,
+            specialty,
             password: hash,
             verified: false
           }
