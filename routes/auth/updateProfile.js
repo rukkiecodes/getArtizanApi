@@ -2,7 +2,7 @@ const router = require("express").Router()
 const User = require("../../models/user")
 const checkAuth = require("../../middleware/auth")
 
-router.post("/updateProfile", async (req, res) => {
+router.post("/updateProfile", checkAuth, async (req, res) => {
   const {
     email,
     name,
