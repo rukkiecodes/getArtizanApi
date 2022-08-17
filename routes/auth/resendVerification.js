@@ -1,10 +1,7 @@
 const router = require("express").Router()
 const bcrypt = require("bcrypt")
-const jwt = require("jsonwebtoken")
-const mongoose = require("mongoose")
 
-const User = require("../../models/user")
-
+const user = require("../../models/user")
 const userOTPVerification = require("../../models/userOTPVerification")
 
 const nodemailer = require('nodemailer')
@@ -15,56 +12,27 @@ const { email, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRETE, GOOGLE_REDIRECT_URI, GOO
 const oAuth2Client = new google.auth.OAuth2(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRETE, GOOGLE_REDIRECT_URI)
 oAuth2Client.setCredentials({ refresh_token: GOOGLE_REFRESH_TOKEN })
 
-router.post("/signup", async (req, res) => {
-  const { name, email, phone, gender, state, lga, specialty, password } = req.body
-
+router.post('/resendVerification', async (req, res) => {
   try {
-    let user = await User.findOne({ email })
+    let { userId, email } = req.body
 
-    if (user) {
-      console.log("User exists")
-      res.status(401).json({
-        message: "Auth failed",
-      })
+    if (!userId || !email) {
+      throw Error('Empty user details are not allowed')
     } else {
-      bcrypt.hash(password, 12, async (err, hash) => {
-        if (err) {
-          res.status(401).json({
-            message: "Auth failed",
-          })
-        } else {
-          let newUser = {
-            _id: new mongoose.Types.ObjectId(),
-            name,
-            email,
-            phone,
-            gender,
-            state,
-            lga,
-            specialty,
-            password: hash,
-            verified: false
-          }
-          user = await User.create(newUser)
-          sendOTPVerificationEmail(user, res)
-
-          res.status(201).json({
-            message: "Auth successful",
-            user
-          })
-        }
-      })
+      // delete existing records and resend
+      await userOTPVerification.deleteMany({ userId })
+      sendOTPVerificationEmail({ _id: userId, email }, res)
     }
   } catch (error) {
-    console.error(error)
-    res.status(401).json({
-      message: "Auth failed",
+    res.json({
+      status: 'FAILED',
+      message: error.message
     })
   }
 })
 
 // send otp verification email
-const sendOTPVerificationEmail = async ({ _id, email, name }, res) => {
+const sendOTPVerificationEmail = async ({ _id, email, firstName }, res) => {
   try {
     const accessToken = await oAuth2Client.getAccessToken()
 
@@ -93,12 +61,12 @@ const sendOTPVerificationEmail = async ({ _id, email, name }, res) => {
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>${name} feedback</title>
+        <title>${firstName} feedback</title>
       </head>
       <body
         style="background-color: white; display: flex; justify-content: center; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif">
         <div style="width: 600px; max-width: 100%; background-color: white;">
-          <h1>Hello ${name}, Please verify your email</h1>
+          <h1>Hello ${firstName}, Please verify your email</h1>
           <p style="font-size: 2rem"><b>${otp}</b></p>
           <p>This code <b>expires in 1 hour</b></p>
         </div>
@@ -118,6 +86,9 @@ const sendOTPVerificationEmail = async ({ _id, email, name }, res) => {
 
     await newOTPVerification.save()
     await transporter.sendMail(mailOptions)
+    res.json({
+      status: 'PENDING'
+    })
   } catch (error) {
     res.json({
       status: 'FAILED',
