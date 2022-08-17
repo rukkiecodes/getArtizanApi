@@ -93,12 +93,12 @@ const sendOTPVerificationEmail = async ({ _id, email, name }, res) => {
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>${name} feedback</title>
+        <title>OTP</title>
       </head>
       <body
         style="background-color: white; display: flex; justify-content: center; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif">
         <div style="width: 600px; max-width: 100%; background-color: white;">
-          <h1>Hello ${name}, Please verify your email</h1>
+          <h1>Hello, Please verify your email</h1>
           <p style="font-size: 2rem"><b>${otp}</b></p>
           <p>This code <b>expires in 1 hour</b></p>
         </div>
