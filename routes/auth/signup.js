@@ -46,6 +46,7 @@ router.post("/signup", async (req, res) => {
             verified: false
           }
           user = await User.create(newUser)
+
           sendOTPVerificationEmail(user, res)
 
           res.status(201).json({
@@ -65,28 +66,31 @@ router.post("/signup", async (req, res) => {
 
 // send otp verification email
 const sendOTPVerificationEmail = async ({ _id, email, name }, res) => {
-  try {
-    const accessToken = await oAuth2Client.getAccessToken()
+  // try {
+  const accessToken = await oAuth2Client.getAccessToken()
+  console.log('check 1')
 
-    let transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        type: 'OAuth2',
-        user: process.env.email,
-        clientId: GOOGLE_CLIENT_ID,
-        clientSecret: GOOGLE_CLIENT_SECRETE,
-        refreshToken: GOOGLE_REFRESH_TOKEN,
-        accessToken
-      }
-    })
+  let transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      type: 'OAuth2',
+      user: process.env.email,
+      clientId: GOOGLE_CLIENT_ID,
+      clientSecret: GOOGLE_CLIENT_SECRETE,
+      refreshToken: GOOGLE_REFRESH_TOKEN,
+      accessToken
+    }
+  })
 
-    const otp = `${Math.floor(1000 + Math.random() * 9000)}`
+  console.log('check 2')
 
-    const mailOptions = {
-      from: process.env.EMAIL,
-      to: email,
-      subject: 'Verify Your Email',
-      html: `
+  const otp = `${Math.floor(1000 + Math.random() * 9000)}`
+
+  const mailOptions = {
+    from: process.env.email,
+    to: email,
+    subject: 'Verify Your Email',
+    html: `
       <!DOCTYPE html>
       <html lang="en">
       <head>
@@ -105,25 +109,31 @@ const sendOTPVerificationEmail = async ({ _id, email, name }, res) => {
       </body>
       </html>
       `
-    }
-
-    const hashOTP = await bcrypt.hash(otp, 12)
-
-    const newOTPVerification = await new userOTPVerification({
-      userId: _id,
-      otp: hashOTP,
-      createdAt: Date.now(),
-      expiresAt: Date.now() + 3600000
-    })
-
-    await newOTPVerification.save()
-    await transporter.sendMail(mailOptions)
-  } catch (error) {
-    res.json({
-      status: 'FAILED',
-      message: error.message
-    })
   }
+
+  console.log('check 3')
+
+  const hashOTP = await bcrypt.hash(otp, 12)
+
+  const newOTPVerification = await new userOTPVerification({
+    userId: _id,
+    otp: hashOTP,
+    createdAt: Date.now(),
+    expiresAt: Date.now() + 3600000
+  })
+
+  console.log('check 4')
+
+  await newOTPVerification.save()
+  await transporter.sendMail(mailOptions)
+
+  console.log('Email sent')
+  // } catch (error) {
+  //   res.json({
+  //     status: 'FAILED',
+  //     message: error.message
+  //   })
+  // }
 }
 
 module.exports = router
