@@ -91,24 +91,49 @@ const sendOTPVerificationEmail = async ({ _id, email, name }, res) => {
     to: email,
     subject: 'Verify Your Email',
     html: `
-      <!DOCTYPE html>
-      <html lang="en">
-      <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>OTP</title>
-      </head>
-      <body
-        style="background-color: white; display: flex; justify-content: center; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif">
-        <div style="width: 600px; max-width: 100%; background-color: white;">
-          <h1>Hello, Please verify your email</h1>
-          <p style="font-size: 2rem"><b>${otp}</b></p>
-          <p>This code <b>expires in 1 hour</b></p>
-        </div>
-      </body>
-      </html>
-      `
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+    
+    <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Verify your login</title>
+      <!--[if mso]><style type="text/css">body, table, td, a { font-family: Arial, Helvetica, sans-serif !important; }</style><![endif]-->
+    </head>
+    
+    <body style="font-family: Helvetica, Arial, sans-serif; margin: 0px; padding: 0px; background-color: #ffffff;">
+      <table role="presentation"
+        style="width: 100%; border-collapse: collapse; border: 0px; border-spacing: 0px; font-family: Arial, Helvetica, sans-serif; background-color: rgb(239, 239, 239);">
+        <tbody>
+          <tr>
+            <td align="center" style="padding: 1rem 2rem; vertical-align: top; width: 100%;">
+              <table role="presentation" style="max-width: 600px; border-collapse: collapse; border: 0px; border-spacing: 0px; text-align: left;">
+                <tbody>
+                  <tr>
+                    <td style="padding: 40px 0px 0px;">
+                      <div style="text-align: left;">
+                        <div style="padding-bottom: 20px;"><img src="https://www.getartizan.com/metrofinancetrading/logo.png" alt="Company" style="width: 100px;"></div>
+                      </div>
+                      <div style="padding: 20px; background-color: rgb(255, 255, 255);">
+                        <div style="color: rgb(48, 48, 48); text-align: right;">
+                          <h1 style="margin: 1rem 0">Verification code</h1>
+                          <p style="padding-bottom: 16px">Please use the verification code below to sign in.</p>
+                          <p style="padding-bottom: 16px">This code expires In <strong>1 hour</strong> </p>
+                          <p style="padding-bottom: 16px"><strong style="font-size: 130%">${otp}</strong></p>
+                          <p style="padding-bottom: 16px">If you didn’t request this, you can ignore this email.</p>
+                          <p style="padding-bottom: 16px">Thanks,<br>The GetArtizan team</p>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </body>
+    </html>`
   }
 
   console.log('check 3')
