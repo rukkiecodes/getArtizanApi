@@ -76,10 +76,7 @@ router.post("/acceptJob", async (req, res) => {
                                                                                                       An artizan as accepted
                                                                                                       your task.</p>
       
-                                                                                              <div>
-                                                                                                      <img src="" alt=""
-                                                                                                              style="width: 100px; height: 100px; margin-bottom: 1em;">
-      
+                                                                                              <div>      
                                                                                                       <div
                                                                                                               style="margin-bottom: .5em;">
                                                                                                               <span
