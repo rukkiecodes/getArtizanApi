@@ -41,9 +41,9 @@ const sendOTPVerificationEmail = async ({ _id, email, firstName }, res) => {
       auth: {
         type: 'OAuth2',
         user: process.env.email,
-        clientId: GOOGLE_CLIENT_ID,
-        clientSecret: GOOGLE_CLIENT_SECRETE,
-        refreshToken: GOOGLE_REFRESH_TOKEN,
+        clientId: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRETE,
+        refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
         accessToken
       }
     })

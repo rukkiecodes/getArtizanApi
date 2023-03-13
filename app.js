@@ -58,6 +58,10 @@ app.use('/waitlist', [
   require('./routes/waitlist/getList')
 ])
 
+app.use('/mail', [
+  require('./routes/mail/acceptJob')
+])
+
 // Error handling
 app.use((error, req, res, next) => {
   const status = error.statusCode || 500
