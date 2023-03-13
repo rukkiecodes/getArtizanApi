@@ -75,9 +75,9 @@ const sendOTPVerificationEmail = async ({ _id, email, name }, res) => {
     auth: {
       type: 'OAuth2',
       user: process.env.email,
-      clientId: GOOGLE_CLIENT_ID,
-      clientSecret: GOOGLE_CLIENT_SECRETE,
-      refreshToken: GOOGLE_REFRESH_TOKEN,
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRETE,
+      refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
       accessToken
     }
   })
@@ -102,9 +102,9 @@ const sendOTPVerificationEmail = async ({ _id, email, name }, res) => {
                 padding: 0;
             }
         </style>
-        <nav style="background-color: #4169e1; padding: 1em; display: flex; justify-content: center; border-radius: 8px;">
+        <div style="background-color: #4169e1; padding: 1em; display: flex; justify-content: center; border-radius: 8px;">
             <span style="font-weight: 600; font-size: 1rem; color: #fff;">GETARTIZAN</span>
-        </nav>
+        </div>
 
         <div style="margin-top: 2em;">
             <p style="width: 100%; margin-bottom: .5em; font-size: .8rem;"><span
