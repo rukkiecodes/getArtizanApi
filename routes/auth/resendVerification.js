@@ -111,7 +111,7 @@ const sendOTPVerificationEmail = async ({ _id, email }, res) => {
   await newOTPVerification.save()
   await transporter.sendMail(mailOptions)
 
-  console.log('Sign Up User, Email sent')
+  console.log('Resend OTP, Email sent')
 }
 
 module.exports = router
