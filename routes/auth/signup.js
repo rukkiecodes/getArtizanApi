@@ -1,6 +1,5 @@
 const router = require("express").Router()
 const bcrypt = require("bcrypt")
-const jwt = require("jsonwebtoken")
 const mongoose = require("mongoose")
 
 const User = require("../../models/user")
@@ -10,10 +9,8 @@ const userOTPVerification = require("../../models/userOTPVerification")
 const nodemailer = require('nodemailer')
 const { google } = require('googleapis')
 
-const { email, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRETE, GOOGLE_REDIRECT_URI, GOOGLE_REFRESH_TOKEN } = process.env
-
-const oAuth2Client = new google.auth.OAuth2(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRETE, GOOGLE_REDIRECT_URI)
-oAuth2Client.setCredentials({ refresh_token: GOOGLE_REFRESH_TOKEN })
+const oAuth2Client = new google.auth.OAuth2(process.env.GOOGLE_CLIENT_ID, process.env.GOOGLE_CLIENT_SECRETE, process.env.GOOGLE_REDIRECT_URI)
+oAuth2Client.setCredentials({ refresh_token: process.env.GOOGLE_REFRESH_TOKEN })
 
 router.post("/signup", async (req, res) => {
   const { name, email, phone, gender, state, lga, specialty, password } = req.body
@@ -65,10 +62,8 @@ router.post("/signup", async (req, res) => {
 })
 
 // send otp verification email
-const sendOTPVerificationEmail = async ({ _id, email, name }, res) => {
-  // try {
+const sendOTPVerificationEmail = async ({ _id, email }, res) => {
   const accessToken = await oAuth2Client.getAccessToken()
-  console.log('check 1')
 
   let transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -81,8 +76,6 @@ const sendOTPVerificationEmail = async ({ _id, email, name }, res) => {
       accessToken
     }
   })
-
-  console.log('check 2')
 
   const otp = `${Math.floor(1000 + Math.random() * 9000)}`
 
@@ -136,8 +129,6 @@ const sendOTPVerificationEmail = async ({ _id, email, name }, res) => {
     </html>`
   }
 
-  console.log('check 3')
-
   const hashOTP = await bcrypt.hash(otp, 12)
 
   const newOTPVerification = await new userOTPVerification({
@@ -147,12 +138,10 @@ const sendOTPVerificationEmail = async ({ _id, email, name }, res) => {
     expiresAt: Date.now() + 3600000
   })
 
-  console.log('check 4')
-
   await newOTPVerification.save()
   await transporter.sendMail(mailOptions)
 
-  console.log('Email sent')
+  console.log('Sign Up User, Email sent')
 }
 
 module.exports = router
