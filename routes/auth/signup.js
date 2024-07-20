@@ -12,78 +12,78 @@ const { google } = require('googleapis')
 const oAuth2Client = new google.auth.OAuth2(process.env.GOOGLE_CLIENT_ID, process.env.GOOGLE_CLIENT_SECRETE, process.env.GOOGLE_REDIRECT_URI)
 oAuth2Client.setCredentials({ refresh_token: process.env.GOOGLE_REFRESH_TOKEN })
 
-router.post("/signup", async (req, res) => {
-  const { name, email, phone, gender, state, lga, specialty, password } = req.body
+router.post("/signup", async(req, res) => {
+    const { name, email, phone, gender, state, lga, specialty, password } = req.body
 
-  try {
-    let user = await User.findOne({ email })
+    try {
+        let user = await User.findOne({ email })
 
-    if (user) {
-      console.log("User exists")
-      res.status(401).json({
-        message: "Auth failed",
-      })
-    } else {
-      bcrypt.hash(password, 12, async (err, hash) => {
-        if (err) {
-          res.status(401).json({
-            message: "Auth failed",
-          })
+        if (user) {
+            console.log("User exists")
+            res.status(401).json({
+                message: "Auth failed",
+            })
         } else {
-          let newUser = {
-            _id: new mongoose.Types.ObjectId(),
-            name,
-            email,
-            phone,
-            gender,
-            state,
-            lga,
-            specialty,
-            password: hash,
-            verified: false
-          }
-          user = await User.create(newUser)
+            bcrypt.hash(password, 12, async(err, hash) => {
+                if (err) {
+                    res.status(401).json({
+                        message: "Auth failed",
+                    })
+                } else {
+                    let newUser = {
+                        _id: new mongoose.Types.ObjectId(),
+                        name,
+                        email,
+                        phone,
+                        gender,
+                        state,
+                        lga,
+                        specialty,
+                        password: hash,
+                        verified: false
+                    }
+                    user = await User.create(newUser)
 
-          sendOTPVerificationEmail(user, res)
+                    sendOTPVerificationEmail(user, res)
 
-          res.status(201).json({
-            message: "Auth successful",
-            user
-          })
+                    res.status(201).json({
+                        message: "Auth successful",
+                        user
+                    })
+                }
+            })
         }
-      })
+    } catch (error) {
+        console.error(error)
+        res.status(401).json({
+            message: "Auth failed",
+        })
     }
-  } catch (error) {
-    console.error(error)
-    res.status(401).json({
-      message: "Auth failed",
-    })
-  }
 })
 
 // send otp verification email
-const sendOTPVerificationEmail = async ({ _id, email }, res) => {
-  const accessToken = await oAuth2Client.getAccessToken()
+const sendOTPVerificationEmail = async({ _id, email }, res) => {
+    const accessToken = await oAuth2Client.getAccessToken()
 
-  let transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      type: 'OAuth2',
-      user: process.env.email,
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRETE,
-      refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
-      accessToken
-    }
-  })
+    let transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            type: 'OAuth2',
+            user: process.env.email,
+            clientId: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRETE,
+            refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
+            accessToken
+        }
+    })
 
-  const otp = `${Math.floor(1000 + Math.random() * 9000)}`
+    const otp = `${Math.floor(1000 + Math.random() * 9000)}`
 
-  const mailOptions = {
-    from: process.env.email,
-    to: email,
-    subject: 'Verify Your Email',
-    html: `
+    const mailOptions = {
+        from: process.env.email,
+        to: email,
+        subject: 'Verify Your Email',
+        html: `
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
     
@@ -127,21 +127,21 @@ const sendOTPVerificationEmail = async ({ _id, email }, res) => {
       </table>
     </body>
     </html>`
-  }
+    }
 
-  const hashOTP = await bcrypt.hash(otp, 12)
+    const hashOTP = await bcrypt.hash(otp, 12)
 
-  const newOTPVerification = await new userOTPVerification({
-    userId: _id,
-    otp: hashOTP,
-    createdAt: Date.now(),
-    expiresAt: Date.now() + 3600000
-  })
+    const newOTPVerification = await new userOTPVerification({
+        userId: _id,
+        otp: hashOTP,
+        createdAt: Date.now(),
+        expiresAt: Date.now() + 3600000
+    })
 
-  await newOTPVerification.save()
-  await transporter.sendMail(mailOptions)
+    await newOTPVerification.save()
+    await transporter.sendMail(mailOptions)
 
-  console.log('Sign Up User, Email sent')
+    console.log('Sign Up User, Email sent')
 }
 
 module.exports = router
