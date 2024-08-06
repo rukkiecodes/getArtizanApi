@@ -5,15 +5,6 @@ const User = require("../../models/user");
 const userOTPVerification = require("../../models/userOTPVerification");
 const nodemailer = require("nodemailer");
 
-
-
-
-
-
-
-
-
-
 const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 465,
@@ -24,82 +15,41 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-
-
-
-
-
-
-
-
-
-
-router.post("/signup", async (req, res) => {
+router.post("/signup", async(req, res) => {
     const { email } = req.body;
-
-
 
     try {
         let user = await User.findOne({ email });
 
-        if (user) {
-            res.status(401).json({
-                message: "Auth failed",
-            });
-        } else {
-            let _id = new mongoose.Types.ObjectId();
+        let _id = new mongoose.Types.ObjectId();
 
+        let newUser = {
+            _id,
+            email,
+            verified: false,
+        };
 
+        user = await User.create(newUser);
 
-            let newUser = {
-                _id,
-                email,
-                verified: false,
-            };
+        // send mail
+        const otp = `${Math.floor(1000 + Math.random() * 9000)}`;
 
-            user = await User.create(newUser);
+        const hashOTP = await bcrypt.hash(otp, 12);
 
+        const newOTPVerification = await new userOTPVerification({
+            userId: _id,
+            otp: hashOTP,
+            createdAt: Date.now(),
+            expiresAt: Date.now() + 3600000,
+        });
 
+        await newOTPVerification.save();
 
-
-
-
-
-
-
-
-
-            // send mail
-            const otp = `${Math.floor(1000 + Math.random() * 9000)}`;
-
-
-
-
-            const hashOTP = await bcrypt.hash(otp, 12);
-
-
-
-
-            const newOTPVerification = await new userOTPVerification({
-                userId: _id,
-                otp: hashOTP,
-                createdAt: Date.now(),
-                expiresAt: Date.now() + 3600000,
-            });
-
-
-
-
-            await newOTPVerification.save();
-
-
-
-
-            transporter
-                .sendMail({
-                    to: email,
-                    subject: "GetArtizan OTP Verification",
-                    html: `
+        transporter
+            .sendMail({
+                to: email,
+                subject: "GetArtizan OTP Verification",
+                html: `
                         <!DOCTYPE html>
 <html lang="en">
 
@@ -234,23 +184,22 @@ router.post("/signup", async (req, res) => {
 
 </html>
                     `,
-                })
-                .then(() => {
-                    console.log("Email sent");
+            })
+            .then(() => {
+                console.log("Email sent");
 
-                    return res.status(200).json({
-                        message: "Authentication was successful",
-                        user,
-                    });
-                })
-                .catch((error) => {
-                    console.log(error);
-
-                    return res.status(500).json({
-                        message: error.message,
-                    });
+                return res.status(200).json({
+                    message: "Authentication was successful",
+                    user,
                 });
-        }
+            })
+            .catch((error) => {
+                console.log(error);
+
+                return res.status(500).json({
+                    message: error.message,
+                });
+            });
     } catch (error) {
         console.error(error);
         res.status(500).json({
